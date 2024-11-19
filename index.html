@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Org Chart Creator</title>
+
+  <!-- TailwindCSS -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+  <!-- ApexTree Library -->
+  <script src="https://cdn.jsdelivr.net/npm/apextree"></script>
+
+  <!-- google chart-->
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+
+  <!-- Ads -->
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2539457390568162"
+    crossorigin="anonymous"></script> -->
+
+  <!-- AG Grid Community CSS and JS -->
+  <link rel="stylesheet" href="https://unpkg.com/ag-grid-community/styles/ag-grid.css" />
+  <link rel="stylesheet" href="https://unpkg.com/ag-grid-community/styles/ag-theme-alpine.css" />
+  <!-- <script src="https://unpkg.com/ag-grid-community/dist/ag-grid-community.min.js"></script> -->
+
+  <script src="https://unpkg.com/ag-grid-community/dist/ag-grid-community.noStyle.js"></script>
+
+
+  <!-- PapaParse for CSV parsing -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+
+  <!-- dom-to-image for PNG and SVG export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
+
+  <!-- html2pdf for PDF export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+
+  <style>
+    /* General body styling */
+    body {
+      background-color: #f9fbff;
+      color: #2D3748;
+      font-family: Arial, sans-serif;
+    }
+
+    /* Header styling */
+    header h1 {
+      font-size: 2.5rem;
+      color: #2D3748;
+    }
+
+    /* Help text styling */
+    #helpText {
+      display: none;
+      background-color: #f0f4f8;
+      padding: 1rem;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      margin-top: 1rem;
+    }
+
+    /* File load and action button styling */
+    .file-load-box,
+    .actions-wrapper,
+    .title-export-container {
+      background-color: #f0f4f8;
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+    }
+
+    /* Org chart container */
+    #svg-tree {
+      width: 100%;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      background-color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      /* Adds padding around the container */
+      box-sizing: border-box;
+      min-height: 600px;
+      height: auto;
+      /* Ensures minimum height to keep space consistent */
+    }
+
+    /* Inner wrapper to control chart alignment and spacing */
+    #svg-inner-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      /* Adds padding around the org chart itself */
+      box-sizing: border-box;
+    }
+
+    /* collapsse of help */
+
+    .help-container {
+      /* padding: 50px 50px; */
+      width: 1024px;
+    }
+
+    .faq-drawer {
+      margin-bottom: 30px;
+    }
+
+    .faq-drawer__content-wrapper {
+      font-size: 1.25em;
+      line-height: 1.4em;
+      max-height: 0px;
+      overflow: hidden;
+      transition: 0.25s ease-in-out;
+    }
+
+    .faq-drawer__title {
+      cursor: pointer;
+      display: flex;
+      gap: 10px;
+      font-size: 1.25em;
+      font-weight: 700;
+      padding: 30px 0 10px 0;
+      position: relative;
+      color: #28ad81;
+      margin-bottom: 10px;
+      border-bottom: 1px solid lightgray;
+      transition: all 0.25s ease-out;
+    }
+
+    .faq-drawer__title::after {
+      border-style: solid;
+      border-width: 1px 1px 0 0;
+      content: " ";
+      display: inline-block;
+      float: right;
+      height: 10px;
+      left: 2px;
+      position: relative;
+      right: 20px;
+      top: 2px;
+      transform: rotate(135deg);
+      transition: 0.35s ease-in-out;
+      vertical-align: top;
+      width: 10px;
+    }
+
+    .faq-drawer__trigger:checked+.faq-drawer__title+.faq-drawer__content-wrapper {
+      max-height: 350px;
+    }
+
+    .faq-drawer__trigger:checked+.faq-drawer__title::after {
+      transform: rotate(-45deg);
+      transition: 0.25s ease-in-out;
+    }
+
+    .help-container input[type="checkbox"] {
+      display: none;
+    }
+
+    .help-des {
+      color: #666;
+      font-size: 24px;
+    }
+
+    .list-inside {
+      color: #888;
+      font-size: 18px;
+    }
+
+    .list-inside li {
+      font-size: 18px;
+    }
+
+    .text-shadow {
+      text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4);
+    }
+
+    .help-title {
+      font-size: 30px;
+      color: #666;
+    }
+
+    footer {
+      background-color: #28ad81;
+    }
+
+    /* @media only screen and (max-width: 600px) {
+      .container {
+        padding: 80px;
+      }
+    } */
+  </style>
+</head>
+
+<body class="bg-gray-100 text-gray-800">
+  <!-- Header Container -->
+  <header class="text-center py-8 bg-green-500 text-white flex align-center">
+    <div class="help-container mx-auto">
+      <div class="flex align-center justify-between">
+        <h1 class="text-4xl font-bold text-white text-shadow">Org Chart Creator</h1>
+        <p class="text-center mt-2 text-2xl text-shadow">Create and Export Custom Org Charts</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="help-container container m-auto ">
+    <div class="faq-drawer">
+      <input class="faq-drawer__trigger" id="faq-drawer" type="checkbox" /><label class="faq-drawer__title"
+        for="faq-drawer">Help<span>
+          <svg viewBox="0 0 24 24" width="32px" height="32px" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M14.77,5.87a1,1,0,0,0,1.36-.37A1,1,0,0,1,18,6a1,1,0,0,1-1,1,1,1,0,0,0,0,2,3,3,0,1,0-2.6-4.5A1,1,0,0,0,14.77,5.87ZM19.07,13a1,1,0,0,0-1.12.86A7,7,0,0,1,11,20H5.41l.65-.65a1,1,0,0,0,0-1.41A7,7,0,0,1,11,6a1,1,0,0,0,0-2A9,9,0,0,0,4,18.61L2.29,20.29a1,1,0,0,0-.21,1.09A1,1,0,0,0,3,22h8a9,9,0,0,0,8.93-7.87A1,1,0,0,0,19.07,13Zm-1.69-2.93A1,1,0,0,0,16.8,10l-.18.06-.18.09-.15.13a1,1,0,0,0-.21.32A.84.84,0,0,0,16,11a1,1,0,0,0,.07.39,1,1,0,0,0,.22.32A1,1,0,0,0,17,12a1,1,0,0,0,1-1,.84.84,0,0,0-.08-.38,1.07,1.07,0,0,0-.54-.54Z"
+              fill="#28ad81" />
+          </svg>
+        </span></label>
+      <div class="faq-drawer__content-wrapper">
+        <div class="faq-drawer__content">
+          <div class="container mx-auto max-w-4xl">
+            <p class="help-title"><strong>Welcome to Org Chart Creator!</strong></p>
+            <p class="help-des">This tool helps you create and export an organizational chart with ease.
+              Here’s
+              how to get started:</p>
+            <ul class="list-disc list-inside">
+              <li><strong>Sample Data:</strong> A sample dataset is provided below. Feel free to edit or clear it to
+                start
+                fresh.</li>
+              <li><strong>Generate Chart:</strong> Click "Generate Org Chart" to see a preview based on the current
+                data.</li>
+              <li><strong>Upload a CSV:</strong> You can also upload your own CSV file. Make sure it includes columns
+                named
+                <em>"Name," "Manager,"</em> and <em>"Position"</em> (case-sensitive).
+              </li>
+              <li><strong>Export to PDF:</strong> Once you're satisfied, export your org chart as a PDF.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Help Text -->
+  <div id="helpText" class="container mx-auto max-w-2xl">
+    <p><strong>Welcome to Org Chart Creator!</strong></p>
+    <p>This tool helps you create and export an organizational chart with ease. Here’s how to get started:</p>
+    <ul class="list-disc list-inside">
+      <li><strong>Sample Data:</strong> A sample dataset is provided below. Feel free to edit or clear it to start
+        fresh.</li>
+      <li><strong>Generate Chart:</strong> Click "Generate Org Chart" to see a preview based on the current data.</li>
+      <li><strong>Upload a CSV:</strong> You can also upload your own CSV file. Make sure it includes columns named
+        <em>"Name," "Manager,"</em> and <em>"Position"</em> (case-sensitive).
+      </li>
+      <li><strong>Export to PDF:</strong> Once you're satisfied, export your org chart as a PDF.</li>
+    </ul>
+  </div>
+
+  <!-- Main container -->
+  <div class="container mx-auto p-6 bg-white shadow-md rounded-lg max-w-5xl">
+    <!-- AG Grid for input data -->
+    <div id="grid-container" class="ag-theme-alpine" style="height: 500px; margin: 1rem 0;"></div>
+
+    <!-- Row Buttons -->
+    <div class="flex justify-center gap-4 mb-4">
+      <button id="addRowButton" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Add Row</button>
+      <button id="deleteRowButton" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Delete Selected
+        Row</button>
+      <button id="clearTableButton" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Clear
+        Table</button>
+    </div>
+
+    <!-- File Upload and CSV Load -->
+    <div class="file-load-box">
+      <input type="file" id="csvFileInput" accept=".csv"
+        class="block w-full text-gray-700 border rounded py-2 px-3 focus:outline-none focus:border-blue-500" />
+      <button id="loadCsvButton" class="bg-blue-500 text-white px-4 py-2 rounded mt-4 hover:bg-blue-600">Load CSV
+        Data</button>
+    </div>
+
+    <!-- Generate Org Chart Button -->
+    <div class="actions-wrapper text-center">
+      <button id="generateButton" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Generate Org
+        Chart</button>
+      <button id="generateButtonRed" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Red</button>
+      <button id="generateButtonBlue" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Blue</button>
+
+      <button id="generateButtonGreen"
+        class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Green</button>
+
+    </div>
+
+    <div id="parent-whole">
+      <!-- Org Chart Display -->
+      <div id="svg-tree" class="shadow-lg">
+        <div id="svg-inner-wrapper"></div> <!-- Inner wrapper to control spacing -->
+      </div>
+    </div>
+
+
+    <!-- Title Input for the Org Chart -->
+    <div id="titleInputContainer" class="text-center mt-4 flex gap-5">
+      <input type="text" id="titleInput" class="border rounded px-3 py-2 flex-1" placeholder="Enter Org Chart Title" />
+      <button id="addTitleButton" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Add
+        Title</button>
+      <button id="clearTitleButton" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Clear
+        Title</button>
+    </div>
+
+    <!-- Export Buttons -->
+    <div class="title-export-container flex justify-center gap-4 mt-6">
+      <button id="exportButton" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Export to
+        PDF</button>
+      <button id="exportPngButton" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Export to
+        PNG</button>
+      <button id="exportSvgButton" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Export to
+        SVG</button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-[#28ad81] text-white p-6" style="margin-top: 2rem; text-align: center;">
+
+    <p class="text-2xl">Copyright 2024</p>
+    <nav>
+      <a class="text-1xl hover:text-blue-600" href="about-us.html">About Us</a> |
+      <a class="text-1xl hover:text-blue-600" href="contact-us.html">Contact Us</a> |
+      <a class="text-1xl hover:text-blue-600" href="privacy-policy.html">Privacy Policy</a> |
+      <a class="text-1xl hover:text-blue-600" href="terms-of-service.html">Terms of Service</a>
+    </nav>
+  </footer>
+
+  <!-- JS Code -->
+  <script src="scripts.js" defer></script>
+</body>
+
+</html>
