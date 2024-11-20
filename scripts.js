@@ -31,7 +31,6 @@ const gridOptions = {
   onCellValueChanged: function(event) {
     getAllCurrentRowData();
      console.log(currentRowData);
-      // Here, you could save changes to a database, update state in your application, etc.
   },
   rowSelection: "single",
 };
@@ -46,7 +45,6 @@ const defaultImageUrl = "https://static.vecteezy.com/ti/gratis-vektor/p1/2661914
 document.addEventListener("DOMContentLoaded", () => {
   new agGrid.Grid(document.getElementById("grid-container"), gridOptions);
 });
-
 
 // Load CSV Data
 document.getElementById("loadCsvButton").addEventListener("click", () => {
@@ -152,7 +150,6 @@ document.getElementById("togglePhoneColumn").addEventListener("change", (event) 
   document.getElementById("grid-container").innerHTML = "";
   new agGrid.Grid(document.getElementById("grid-container"), gridOptions);
 });
-
 
 // Generate Org Chart Button Event
 generateButton.addEventListener("click", function () {
