@@ -241,26 +241,34 @@
       </div>
     </div>
   </div>
-  <!-- Help Text -->
-  <div id="helpText" class="container mx-auto max-w-2xl">
-    <p><strong>Welcome to Org Chart Creator!</strong></p>
-    <p>This tool helps you create and export an organizational chart with ease. Here’s how to get started:</p>
-    <ul class="list-disc list-inside">
-      <li><strong>Sample Data:</strong> A sample dataset is provided below. Feel free to edit or clear it to start
-        fresh.</li>
-      <li><strong>Generate Chart:</strong> Click "Generate Org Chart" to see a preview based on the current data.</li>
-      <li><strong>Upload a CSV:</strong> You can also upload your own CSV file. Make sure it includes columns named
-        <em>"Name," "Manager,"</em> and <em>"Position"</em> (case-sensitive).
-      </li>
-      <li><strong>Export to PDF:</strong> Once you're satisfied, export your org chart as a PDF.</li>
-    </ul>
-  </div>
 
   <!-- Main container -->
   <div class="container mx-auto p-6 bg-white shadow-md rounded-lg max-w-5xl">
     <!-- AG Grid for input data -->
-    <div id="grid-container" class="ag-theme-alpine" style="height: 500px; margin: 1rem 0;"></div>
-
+    <div>
+      <div class="flex gap-5">
+        <div>
+          <label>
+            <input type="checkbox" id="togglePhotoColumn">
+            Photo
+          </label>
+        </div>
+        <div>
+          <label>
+            <input type="checkbox" id="toggleEmailColumn">
+            Email
+          </label>
+        </div>
+        <div>
+          <label>
+            <input type="checkbox" id="togglePhoneColumn">
+            Phone
+          </label>
+        </div>
+      </div>
+      <div id="grid-container" class="ag-theme-alpine" style="height: 500px; margin: 1rem 0;">
+      </div>
+    </div>
     <!-- Row Buttons -->
     <div class="flex justify-center gap-4 mb-4">
       <button id="addRowButton" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Add Row</button>

@@ -1,20 +1,25 @@
 // Load Google Charts
 google.charts.load("current", { packages: ["orgchart"] });
 
+var currentRowData = [{ Name: "Shelby Johnson", Manager: "", Position: "CEO" },
+  { Name: "Jim Torres", Manager: "Shelby Johnson", Position: "VP" },
+  { Name: "Alice Brown", Manager: "Shelby Johnson", Position: "Director" },
+  { Name: "Bob Smith", Manager: "Jim Torres", Position: "Manager" },
+  { Name: "Carol White", Manager: "Jim Torres", Position: "Manager" }];
+
 // AG Grid Configuration
 const gridOptions = {
   columnDefs: [
     { headerName: "Name", field: "Name", editable: true },
     { headerName: "Manager", field: "Manager", editable: true },
     { headerName: "Position", field: "Position", editable: true },
-    { headerName: "Url", field: "Url", editable: true },
   ],
   rowData: [
-    { Name: "Shelby Johnson", Manager: "", Position: "CEO", Url: "" },
-    { Name: "Jim Torres", Manager: "Shelby Johnson", Position: "VP", Url: "" },
-    { Name: "Alice Brown", Manager: "Shelby Johnson", Position: "Director", Url: "" },
-    { Name: "Bob Smith", Manager: "Jim Torres", Position: "Manager", Url: "" },
-    { Name: "Carol White", Manager: "Jim Torres", Position: "Manager", Url: "" },
+    { Name: "Shelby Johnson", Manager: "", Position: "CEO" },
+    { Name: "Jim Torres", Manager: "Shelby Johnson", Position: "VP" },
+    { Name: "Alice Brown", Manager: "Shelby Johnson", Position: "Director" },
+    { Name: "Bob Smith", Manager: "Jim Torres", Position: "Manager" },
+    { Name: "Carol White", Manager: "Jim Torres", Position: "Manager" },
   ],
   defaultColDef: {
     flex: 1,
@@ -23,8 +28,17 @@ const gridOptions = {
     sortable: true,
     filter: true,
   },
+  onCellValueChanged: function(event) {
+    getAllCurrentRowData();
+     console.log(currentRowData);
+      // Here, you could save changes to a database, update state in your application, etc.
+  },
   rowSelection: "single",
 };
+
+const refreshGrid = () => {
+  gridOptions.rowData = currentRowData;
+}
 
 const defaultImageUrl = "https://static.vecteezy.com/ti/gratis-vektor/p1/26619142-standard-avatar-profil-ikon-vektor-av-social-media-anvandare-foto-bild-vector.jpg";
 
@@ -32,6 +46,7 @@ const defaultImageUrl = "https://static.vecteezy.com/ti/gratis-vektor/p1/2661914
 document.addEventListener("DOMContentLoaded", () => {
   new agGrid.Grid(document.getElementById("grid-container"), gridOptions);
 });
+
 
 // Load CSV Data
 document.getElementById("loadCsvButton").addEventListener("click", () => {
@@ -53,18 +68,27 @@ document.getElementById("loadCsvButton").addEventListener("click", () => {
 
 // Functions for Adding, Deleting, and Clearing Rows
 document.getElementById("addRowButton").addEventListener("click", () => {
+  const newRow = { Name: "", Manager: "", Position: "", Url: "", Phone: "", Email: "" };
   gridOptions.api.applyTransaction({
-    add: [{ Name: "", Manager: "", Position: "" }],
+    add: [{ Name: "", Manager: "", Position: "", Url: "", Phone: "", Email: "" }],
   });
+  refreshGrid();
 });
 
 document.getElementById("deleteRowButton").addEventListener("click", () => {
   const selectedRows = gridOptions.api.getSelectedNodes();
+  selectedRows.forEach(node => {
+    const idx = dynamicData.findIndex(item => item === node.data);
+    if (idx !== -1) {
+      dynamicData.splice(idx, 1);
+    }
+  })
   if (selectedRows.length > 0) {
     gridOptions.api.applyTransaction({
       remove: selectedRows.map((node) => node.data),
     });
   }
+  refreshGrid();
 });
 
 document.getElementById("clearTableButton").addEventListener("click", () => {
@@ -72,6 +96,63 @@ document.getElementById("clearTableButton").addEventListener("click", () => {
   gridOptions.api.forEachNode((node) => rowData.push(node.data));
   gridOptions.api.applyTransaction({ remove: rowData });
 });
+
+// Functions for Adding, Deleting Columns
+// Function to toggle Email column
+document.getElementById("toggleEmailColumn").addEventListener("change", (event) => {
+  if (event.target.checked) {
+    
+    // If checked, add Email column
+    const emailColumn = { headerName: "Email", field: "Email", editable: true };
+    gridOptions.columnDefs.push(emailColumn);
+  } else {
+    // If unchecked, remove Email column
+    
+    // refreshGrid();
+    gridOptions.columnDefs = gridOptions.columnDefs.filter(col => col.field !== "Email");
+  }
+  refreshGrid();
+
+  // refreshGrid();
+  // Update the grid with the new column definitions
+  document.getElementById("grid-container").innerHTML = "";
+  new agGrid.Grid(document.getElementById("grid-container"), gridOptions);
+});
+
+// Function to toggle Photo column
+document.getElementById("togglePhotoColumn").addEventListener("change", (event) => {
+  if (event.target.checked) {
+    // If checked, add Email column
+    const urlColumn = { headerName: "Url", field: "Url", editable: true };
+    gridOptions.columnDefs.push(urlColumn);
+  } else {
+    // If unchecked, remove Email column
+    gridOptions.columnDefs = gridOptions.columnDefs.filter(col => col.field !== "Url");
+  }
+  refreshGrid();
+
+  // Update the grid with the new column definitions
+  document.getElementById("grid-container").innerHTML = "";
+  new agGrid.Grid(document.getElementById("grid-container"), gridOptions);
+});
+
+// Function to toggle Phone column
+document.getElementById("togglePhoneColumn").addEventListener("change", (event) => {
+  if (event.target.checked) {
+    // If checked, add Email column
+    const phoneColumn = { headerName: "Phone", field: "Phone", editable: true };
+    gridOptions.columnDefs.push(phoneColumn);
+  } else {
+    // If unchecked, remove Email column
+    gridOptions.columnDefs = gridOptions.columnDefs.filter(col => col.field !== "Phone");
+  }
+  refreshGrid();
+
+  // Update the grid with the new column definitions
+  document.getElementById("grid-container").innerHTML = "";
+  new agGrid.Grid(document.getElementById("grid-container"), gridOptions);
+});
+
 
 // Generate Org Chart Button Event
 generateButton.addEventListener("click", function () {
@@ -86,14 +167,20 @@ generateButton.addEventListener("click", function () {
   const chartData = rowData.map((row) => [
     {
       v: row.Name,
-      f: `<div style="border: 1px solid #10b981; border-radius: 4px; padding: 10px; text-align: center;">
+      f: `<div style="min-width: 120px; padding: 5px; text-align: center;">
              <div style="background-color: #10b981; color: white; padding: 5px; border-radius: 8px 8px 0 0; display: flex; flex-direction: column; align-items: center; ">
              ${row.Url && row.Url.length > 0 ? 
               `<img src="${row.Url}" style="width: 50px; height: 50px; border-radius: 50%;">` : 
               `<img src="${defaultImageUrl}" style="width: 50px; height: 50px; border-radius: 50%;">`}
              <p style="font-size: 16px;">${row.Name}</p>
              </div>
-             <div style="padding: 10px; font-size: 14px; color: #10b981; ">${row.Position}</div>
+             <div style="font-size: 12px; color: #10b981; ">${row.Position}</div>
+             ${row.Email && row.Email.length > 0 ? 
+              `<div style="font-size: 12px; color: #10b981; ">${row.Email}</div>` : 
+              ``}
+            ${row.Phone && row.Phone.length > 0 ? 
+              `<div style="font-size: 12px; color: #10b981; ">${row.Phone}</div>` : 
+              ``}
            </div>`,
     },
     row.Manager || "",
@@ -104,7 +191,6 @@ generateButton.addEventListener("click", function () {
 });
 
 // Making Org Chart
-
 const makingOrg = (color) => {
   var rowData = [];
   gridOptions.api.forEachNode((node) => rowData.push(node.data));
@@ -117,14 +203,20 @@ const makingOrg = (color) => {
   const chartData = rowData.map((row) => [
     {
       v: row.Name,
-      f: `<div style="border: 1px solid ${color}; border-radius: 4px; padding: 10px; text-align: center;">
+      f: `<div style="min-width: 120px; padding: 5px; text-align: center;">
              <div style="background-color: ${color}; color: white; padding: 5px; border-radius: 8px 8px 0 0; display: flex; flex-direction: column; align-items: center; ">
              ${row.Url && row.Url.length > 0 ? 
               `<img src="${row.Url}" style="width: 50px; height: 50px; border-radius: 50%;">` : 
               `<img src="${defaultImageUrl}" style="width: 50px; height: 50px; border-radius: 50%;">`}
              <p style="font-size: 16px;">${row.Name}</p>
              </div>
-             <div style="padding: 10px; font-size: 14px; color: ${color}; ">${row.Position}</div>
+             <div style="font-size: 12px; color: ${color}; ">${row.Position}</div>
+             ${row.Email && row.Email.length > 0 ? 
+              `<div style="font-size: 12px; color: ${color}; ">${row.Email}</div>` : 
+              ``}
+            ${row.Phone && row.Phone.length > 0 ? 
+              `<div style="font-size: 12px; color: ${color}; ">${row.Phone}</div>` : 
+              ``}
            </div>`,
     },
     row.Manager || "",
@@ -133,7 +225,6 @@ const makingOrg = (color) => {
 
   drawChart(chartData);
 }
-
 
 // generate org chart button as Red
 generateButtonRed.addEventListener("click", (color="#10b981") => {
@@ -209,6 +300,7 @@ document.getElementById("addTitleButton").addEventListener("click", () => {
   }
 });
 
+// Clear title part
 document.getElementById("clearTitleButton").addEventListener("click", () => {
   document.getElementById("titleInput").value = "";
   const titleContainer = document.getElementById("chart-title");
@@ -266,3 +358,11 @@ document.getElementById('exportSvgButton').addEventListener('click', function ()
           console.error('oops, something went wrong!', error);
       });
 });
+
+// get whole data of table.
+function getAllCurrentRowData() {
+  currentRowData = [];
+  gridOptions.api.forEachNode(node => {
+      currentRowData.push(node.data);
+  });
+}
