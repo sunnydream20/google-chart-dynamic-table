@@ -254,6 +254,81 @@ function drawChart(chartData) {
     allowCollapse: true, // Enable node collapsing
   });
 
+
+  // zoom
+
+  let scale = 1;
+  charttable = document.getElementsByClassName("google-visualization-orgchart-table")[0];
+  charttable.addEventListener('wheel', function(event) {
+      event.preventDefault();
+      if (event.deltaY < 0) {
+          scale *= 1.1; // Zoom in
+      } else {
+          scale /= 1.1; // Zoom out
+      }
+      charttable.style.transform = `scale(${scale})`; // Apply scale
+  });
+// drag and drop
+
+   // Drag-and-drop functionality
+   charttable.addEventListener('mousedown', initiateDrag);
+   charttable.addEventListener('touchstart', initiateDrag);
+
+   function initiateDrag(event) {
+       const target = event.target.closest('table'); // Get the closest row (node)
+       if (target) {
+           currentNode = target;
+           const rect = target.getBoundingClientRect();
+           if (event.type === 'mousedown') {
+               offsetX = event.clientX - rect.left;
+               offsetY = event.clientY - rect.top;
+           } else {
+               offsetX = event.touches[0].clientX - rect.left;
+               offsetY = event.touches[0].clientY - rect.top;
+           }
+           target.style.cursor = 'grabbing'; // Change cursor to grabbing
+           event.preventDefault();
+           document.addEventListener('mousemove', onMouseMove);
+           document.addEventListener('mouseup', onMouseUp);
+           document.addEventListener('touchmove', onTouchMove);
+           document.addEventListener('touchend', onMouseUp);
+       }
+   }
+
+   function onMouseMove(event) {
+       if (currentNode) {
+           currentNode.style.position = 'absolute';
+           currentNode.style.left = event.clientX - offsetX + 'px';
+           currentNode.style.top = event.clientY - offsetY + 'px';
+       }
+   }
+
+   function onTouchMove(event) {
+       if (currentNode) {
+           currentNode.style.position = 'absolute';
+           currentNode.style.left = event.touches[0].clientX - offsetX + 'px';
+           currentNode.style.top = event.touches[0].clientY - offsetY + 'px';
+       }
+   }
+
+   function onMouseUp() {
+       if (currentNode) {
+           currentNode.style.cursor = 'grab'; // Reset cursor
+           currentNode = null; // Clear current node
+           document.removeEventListener('mousemove', onMouseMove);
+           document.removeEventListener('mouseup', onMouseUp);
+           document.removeEventListener('touchmove', onTouchMove);
+           document.removeEventListener('touchend', onMouseUp);
+       }
+   }
+
+function onTouchMove(event) {
+  if (currentNode) {
+      currentNode.style.position = 'absolute';
+      currentNode.style.left = event.touches[0].clientX - offsetX + 'px';
+      currentNode.style.top = event.touches[0].clientY - offsetY + 'px';
+  }
+}
    // Use setTimeout to allow rendering to complete before adjusting the height
    setTimeout(() => {
         adjustContainerHeight(chartDiv);
