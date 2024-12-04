@@ -148,15 +148,15 @@ generateButton.addEventListener("click", function () {
     {
       v: row.Name,
       f: `<div style="min-width: 120px; padding: 5px; text-align: center;">
-             <div style="background-color: #8c8c8c; color: white; padding: 5px; border-radius: 8px 8px 0 0; display: flex; flex-direction: column; align-items: center; ">
+             <div style="background-color: #6b7280; color: white; padding: 5px; border-radius: 8px 8px 0 0; display: flex; flex-direction: column; align-items: center; ">
              <p style="font-size: 16px;">${row.Name}</p>
              </div>
-             <div style="font-size: 12px; color: #8c8c8c; ">${row.Position}</div>
+             <div style="font-size: 12px; color: #6b7280; ">${row.Position}</div>
              ${row.Email && row.Email.length > 0 ? 
-              `<div style="font-size: 12px; color: #8c8c8c; ">${row.Email}</div>` : 
+              `<div style="font-size: 12px; color: #6b7280; ">${row.Email}</div>` : 
               ``}
             ${row.Phone && row.Phone.length > 0 ? 
-              `<div style="font-size: 12px; color: #8c8c8c; ">${row.Phone}</div>` : 
+              `<div style="font-size: 12px; color: #6b7280; ">${row.Phone}</div>` : 
               ``}
            </div>`,
     },
@@ -202,14 +202,14 @@ const makingOrg = (color) => {
   drawChart(chartData);
 }
 
-// generate org chart button as Gray
-generateButtonGray.addEventListener("click", (color="#6b7280") => {
-  makingOrg("#6b7280");
-})
-
 // generate org chart button as Blue
 generateButtonBrown.addEventListener("click", () => {
-  makingOrg('#9b6e5e');
+  makingOrg('#3b82f6');
+})
+
+// generate org chart button as Red
+generateButtonRed.addEventListener("click", () => {
+  makingOrg('#ef4444');
 })
 
 // generate org chart button as Green
