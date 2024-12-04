@@ -29,6 +29,7 @@ const gridOptions = {
     filter: true,
   },
   onCellValueChanged: function(event) {
+    document.getElementById('sampleData').style.display = 'none';
     getAllCurrentRowData();
      console.log(currentRowData);
   },
