@@ -133,7 +133,7 @@
       padding: 30px 0 10px 0;
       position: relative;
       color: #28ad81;
-      margin-bottom: 10px;
+      margin-bottom: 30px;
       border-bottom: 1px solid lightgray;
       transition: all 0.25s ease-out;
     }
@@ -170,7 +170,8 @@
 
     .help-des {
       color: #666;
-      font-size: 24px;
+      font-size: 22px;
+      margin-bottom: 20px;
     }
 
     .list-inside {
@@ -189,26 +190,47 @@
     .help-title {
       font-size: 30px;
       color: #666;
+      margin-bottom: 30px;
     }
 
     footer {
       background-color: #28ad81;
     }
 
-    /* @media only screen and (max-width: 600px) {
-      .container {
-        padding: 80px;
-      }
-    } */
+    #generateButton {
+      background-color: #9e9e9e;
+    }
+
+    #generateButton:hover {
+      background-color: #8c8c8c;
+    }
+
+    #generateButtonGray {
+      background-color: #6b7280;
+    }
+
+    #generateButtonGray:hover {
+      background-color: #484c55;
+    }
+
+    #generateButtonBrown {
+      background-color: #9b6e5e;
+    }
+
+    #generateButtonBrown:hover {
+      background-color: #775548;
+    }
   </style>
 </head>
 
 <body class="bg-gray-100 text-gray-800">
   <!-- Header Container -->
-  <header class="text-center py-8 bg-green-500 text-white flex align-center">
+  <header class="text-center py-8 text-white flex align-center" style="background-color: #069163;">
     <div class="help-container mx-auto">
       <div class="flex align-center justify-between">
-        <h1 class="text-4xl font-bold text-white text-shadow">Org Chart Creator</h1>
+        <a href="./index.html" target="_blank">
+          <h1 class="text-4xl font-bold text-white text-shadow">Org Chart Creator</h1>
+        </a>
         <p class="text-center mt-2 text-2xl text-shadow">Create and Export Custom Org Charts</p>
       </div>
     </div>
@@ -256,12 +278,6 @@
       <div class="flex gap-5">
         <div>
           <label>
-            <input type="checkbox" id="togglePhotoColumn">
-            Photo
-          </label>
-        </div>
-        <div>
-          <label>
             <input type="checkbox" id="toggleEmailColumn">
             Email
           </label>
@@ -295,10 +311,10 @@
 
     <!-- Generate Org Chart Button -->
     <div class="actions-wrapper text-center">
-      <button id="generateButton" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Generate Org
-        Chart</button>
-      <button id="generateButtonRed" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Red</button>
-      <button id="generateButtonBlue" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Blue</button>
+      <div><button id="generateButton" class="text-white px-4 py-2 rounded">Generate Org
+          Chart</button></div>
+      <button id="generateButtonGray" class="text-white px-4 py-2 rounded">Gray</button>
+      <button id="generateButtonBrown" class="text-white px-4 py-2 rounded">Blue</button>
 
       <button id="generateButtonGreen"
         class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Green</button>
@@ -334,7 +350,7 @@
   </div>
 
   <!-- Footer -->
-  <footer class="bg-[#28ad81] text-white p-6" style="margin-top: 2rem; text-align: center;">
+  <footer class="text-white p-6" style="background-color: #069163; margin-top: 2rem; text-align: center;">
 
     <p class="text-2xl">Copyright 2024</p>
     <nav>
