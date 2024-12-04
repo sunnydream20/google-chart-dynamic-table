@@ -31,16 +31,13 @@ const gridOptions = {
   onCellValueChanged: function(event) {
     document.getElementById('sampleData').style.display = 'none';
     getAllCurrentRowData();
-     console.log(currentRowData);
   },
-  rowSelection: "single",
+  rowSelection: {type: "single"},
 };
 
 const refreshGrid = () => {
   gridOptions.rowData = currentRowData;
 }
-
-const defaultImageUrl = "./defaultavatar1.png";
 
 // Initialize AG Grid
 document.addEventListener("DOMContentLoaded", () => {
@@ -55,7 +52,6 @@ document.getElementById("loadCsvButton").addEventListener("click", () => {
       header: true,
       skipEmptyLines: true,
       complete: (results) => {
-        console.log(results);
         gridOptions.api.applyTransaction({ add: results.data });
       },
       error: (error) => console.error("CSV Parsing Error:", error),
