@@ -39,7 +39,7 @@ const refreshGrid = () => {
   gridOptions.rowData = currentRowData;
 }
 
-const defaultImageUrl = "https://static.vecteezy.com/ti/gratis-vektor/p1/26619142-standard-avatar-profil-ikon-vektor-av-social-media-anvandare-foto-bild-vector.jpg";
+const defaultImageUrl = "./defaultavatar1.png";
 
 // Initialize AG Grid
 document.addEventListener("DOMContentLoaded", () => {
@@ -66,9 +66,9 @@ document.getElementById("loadCsvButton").addEventListener("click", () => {
 
 // Functions for Adding, Deleting, and Clearing Rows
 document.getElementById("addRowButton").addEventListener("click", () => {
-  const newRow = { Name: "", Manager: "", Position: "", Url: "", Phone: "", Email: "" };
+  const newRow = { Name: "", Manager: "", Position: "", Phone: "", Email: "" };
   gridOptions.api.applyTransaction({
-    add: [{ Name: "", Manager: "", Position: "", Url: "", Phone: "", Email: "" }],
+    add: [{ Name: "", Manager: "", Position: "", Phone: "", Email: "" }],
   });
   refreshGrid();
 });
@@ -117,23 +117,6 @@ document.getElementById("toggleEmailColumn").addEventListener("change", (event) 
   new agGrid.Grid(document.getElementById("grid-container"), gridOptions);
 });
 
-// Function to toggle Photo column
-document.getElementById("togglePhotoColumn").addEventListener("change", (event) => {
-  if (event.target.checked) {
-    // If checked, add Email column
-    const urlColumn = { headerName: "Url", field: "Url", editable: true };
-    gridOptions.columnDefs.push(urlColumn);
-  } else {
-    // If unchecked, remove Email column
-    gridOptions.columnDefs = gridOptions.columnDefs.filter(col => col.field !== "Url");
-  }
-  refreshGrid();
-
-  // Update the grid with the new column definitions
-  document.getElementById("grid-container").innerHTML = "";
-  new agGrid.Grid(document.getElementById("grid-container"), gridOptions);
-});
-
 // Function to toggle Phone column
 document.getElementById("togglePhoneColumn").addEventListener("change", (event) => {
   if (event.target.checked) {
@@ -165,18 +148,15 @@ generateButton.addEventListener("click", function () {
     {
       v: row.Name,
       f: `<div style="min-width: 120px; padding: 5px; text-align: center;">
-             <div style="background-color: #10b981; color: white; padding: 5px; border-radius: 8px 8px 0 0; display: flex; flex-direction: column; align-items: center; ">
-             ${row.Url && row.Url.length > 0 ? 
-              `<img src="${row.Url}" style="width: 50px; height: 50px; border-radius: 50%;">` : 
-              `<img src="${defaultImageUrl}" style="width: 50px; height: 50px; border-radius: 50%;">`}
+             <div style="background-color: #8c8c8c; color: white; padding: 5px; border-radius: 8px 8px 0 0; display: flex; flex-direction: column; align-items: center; ">
              <p style="font-size: 16px;">${row.Name}</p>
              </div>
-             <div style="font-size: 12px; color: #10b981; ">${row.Position}</div>
+             <div style="font-size: 12px; color: #8c8c8c; ">${row.Position}</div>
              ${row.Email && row.Email.length > 0 ? 
-              `<div style="font-size: 12px; color: #10b981; ">${row.Email}</div>` : 
+              `<div style="font-size: 12px; color: #8c8c8c; ">${row.Email}</div>` : 
               ``}
             ${row.Phone && row.Phone.length > 0 ? 
-              `<div style="font-size: 12px; color: #10b981; ">${row.Phone}</div>` : 
+              `<div style="font-size: 12px; color: #8c8c8c; ">${row.Phone}</div>` : 
               ``}
            </div>`,
     },
@@ -186,6 +166,7 @@ generateButton.addEventListener("click", function () {
 
   drawChart(chartData);
 });
+
 
 // Making Org Chart
 const makingOrg = (color) => {
@@ -202,9 +183,7 @@ const makingOrg = (color) => {
       v: row.Name,
       f: `<div style="min-width: 120px; padding: 5px; text-align: center;">
              <div style="background-color: ${color}; color: white; padding: 5px; border-radius: 8px 8px 0 0; display: flex; flex-direction: column; align-items: center; ">
-             ${row.Url && row.Url.length > 0 ? 
-              `<img src="${row.Url}" style="width: 50px; height: 50px; border-radius: 50%;">` : 
-              `<img src="${defaultImageUrl}" style="width: 50px; height: 50px; border-radius: 50%;">`}
+           
              <p style="font-size: 16px;">${row.Name}</p>
              </div>
              <div style="font-size: 12px; color: ${color}; ">${row.Position}</div>
@@ -223,14 +202,14 @@ const makingOrg = (color) => {
   drawChart(chartData);
 }
 
-// generate org chart button as Red
-generateButtonRed.addEventListener("click", (color="#10b981") => {
-  makingOrg("red");
+// generate org chart button as Gray
+generateButtonGray.addEventListener("click", (color="#6b7280") => {
+  makingOrg("#6b7280");
 })
 
 // generate org chart button as Blue
-generateButtonBlue.addEventListener("click", () => {
-  makingOrg('#3b82f6');
+generateButtonBrown.addEventListener("click", () => {
+  makingOrg('#9b6e5e');
 })
 
 // generate org chart button as Green
@@ -440,3 +419,19 @@ function getAllCurrentRowData() {
 }
 
 // Hello.
+
+function onFileChange(event, nodeId) {
+  const file = event.target.files[0]; // Get the uploaded file
+  if (file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+          const newImageUrl = e.target.result; // Get the file as a data URL
+          // Find the corresponding row data by node ID and update the Url field
+          const rowNode = gridOptions.api.getRowNode(nodeId);
+          if (rowNode) {
+              rowNode.setDataValue('Url', newImageUrl); // Update the Url in row data
+          }
+      };
+      reader.readAsDataURL(file); // Read the file and convert it to a data URL
+  }
+}
