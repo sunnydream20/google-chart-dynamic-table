@@ -42,13 +42,8 @@
   <style>
     /* General body styling */
     body {
-      /* background-color: #28ad81; */
-      background-image: url("https://images.unsplash.com/photo-1617957848715-3a374699f8eb?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
-      color: #2D3748;
+      background-color: #eee;
       font-family: Arial, sans-serif;
-      background-repeat: no-repeat;
-      background-position: sticky;
-      background-size: cover;
     }
 
     header {
@@ -207,10 +202,6 @@
       background-color: #484c55;
     }
 
-    .logo {
-      width: 200px;
-    }
-
     .background-1 {
       background: #069163;
       background-image: -webkit-radial-gradient(top, circle cover, #069163 0%, #334455 80%);
@@ -282,6 +273,11 @@
         transform: scale3d(1, 1, 1);
       }
     }
+
+    .logo {
+      width: 100px;
+      margin: 0 auto;
+    }
   </style>
 </head>
 
@@ -293,10 +289,13 @@
     <div class="help-container mx-auto">
       <div class="flex items-center justify-between">
         <a href="./index.html">
-          <!-- <h1 class="text-4xl font-bold text-white text-shadow">Org Chart Creator</h1> -->
-          <img class="logo" src="./logo3.png" alt="..loading" />
+          <div>
+            <img class="logo" src="org-logo.png" alt="..." />
+          </div>
+          <h1 class="text-lg w-max sm:text-4xl font-bold text-white text-shadow"><span>Org Chart</span> <br /> Creator
+          </h1>
         </a>
-        <p class="text-center text-lg text-shadow sm:text-xl">Create and Export Simple, Custom Organizational
+        <p class="text-center text-sm text-shadow sm:text-2xl">Create and Export Simple, Custom Organizational
           Charts</p>
       </div>
     </div>
