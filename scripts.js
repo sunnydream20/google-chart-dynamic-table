@@ -73,9 +73,9 @@ document.getElementById("addRowButton").addEventListener("click", () => {
 document.getElementById("deleteRowButton").addEventListener("click", () => {
   const selectedRows = gridOptions.api.getSelectedNodes();
   selectedRows.forEach(node => {
-    const idx = dynamicData.findIndex(item => item === node.data);
+    const idx = currentRowData.findIndex(item => item === node.data);
     if (idx !== -1) {
-      dynamicData.splice(idx, 1);
+      currentRowData.splice(idx, 1);
     }
   })
   if (selectedRows.length > 0) {
@@ -432,3 +432,6 @@ function onFileChange(event, nodeId) {
       reader.readAsDataURL(file); // Read the file and convert it to a data URL
   }
 }
+
+
+let mobileAlarm = document.getElementById("mobileShow");
